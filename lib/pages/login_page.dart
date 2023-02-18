@@ -1,165 +1,78 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import '/utils/fire_auth.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:simple_logger/simple_logger.dart';
+import '../providers/auth_provider.dart';
+import 'list_page.dart';
 
-final logger = SimpleLogger()
-  ..setLevel(
-    // すべてログ出力する
-    Level.ALL,
-    // ログ出力した場所を出力する
-    includeCallerInfo: true,
-  );
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginPage extends HookConsumerWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final emailController = useTextEditingController(text: '');
+    final passwordController = useTextEditingController(text: '');
 
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-
-  final _emailTextController = TextEditingController();
-  final _passwordTextController = TextEditingController();
-
-  final _focusEmail = FocusNode();
-  final _focusPassword = FocusNode();
-
-  bool _isProcessing = false;
-
-  Future<FirebaseApp> _initializeFirebase() async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp();
-
-    User? user = await FirebaseAuth.instance.currentUser;
-    logger.info(user);
-    if (user != null) {
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacementNamed('/list');
-    }
-
-    return firebaseApp;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        _focusEmail.unfocus();
-        _focusPassword.unfocus();
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Firebase Authentication'),
+    return Scaffold(
+      appBar: AppBar(title: const Text('ログイン')),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 24,
+          horizontal: 32,
         ),
-        body: FutureBuilder(
-          future: _initializeFirebase(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 24.0),
-                      child: Text(
-                        'Login',
-                        style: Theme.of(context).textTheme.headline1,
-                      ),
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          TextFormField(
-                            controller: _emailTextController,
-                            focusNode: _focusEmail,
-                            decoration: InputDecoration(
-                              hintText: "Email",
-                              errorBorder: UnderlineInputBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                                borderSide: const BorderSide(
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            controller: _passwordTextController,
-                            focusNode: _focusPassword,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: "Password",
-                              errorBorder: UnderlineInputBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                                borderSide: const BorderSide(
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24.0),
-                          _isProcessing
-                              ? const CircularProgressIndicator()
-                              : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          _focusEmail.unfocus();
-                                          _focusPassword.unfocus();
-
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            setState(() {
-                                              _isProcessing = true;
-                                            });
-
-                                            User? user = await FireAuth
-                                                .signInUsingEmailPassword(
-                                              email: _emailTextController.text,
-                                              password:
-                                                  _passwordTextController.text,
-                                            );
-
-                                            setState(() {
-                                              _isProcessing = false;
-                                            });
-
-                                            if (user != null) {
-                                              Navigator.of(context)
-                                                  .pushReplacementNamed(
-                                                      '/list');
-                                            }
-                                          }
-                                        },
-                                        child: const Text(
-                                          'Sign In',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              );
-            }
-
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.mail),
+                label: Text('メールアドレス'),
+                hintText: 'test@gmail.com',
+              ),
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.lock),
+                label: Text('パスワード'),
+                hintText: 'password',
+              ),
+              controller: passwordController,
+              obscureText: true,
+            ),
+            const SizedBox(
+              height: 48,
+            ),
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                minimumSize:
+                    MaterialStateProperty.all<Size>(const Size(128, 32)),
+              ),
+              onPressed: () async {
+                try {
+                  if (emailController.text.isEmpty) {
+                    throw 'メールアドレスを入力してください';
+                  }
+                  if (passwordController.text.isEmpty) {
+                    throw 'パスワードを入力してください';
+                  }
+                  await ref.read(authControllerProvider.notifier).signIn(
+                        emailController.text,
+                        passwordController.text,
+                      );
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const ListPage()),
+                    (_) => false,
+                  );
+                } catch (e) {
+                  print('サインインでエラーだよ');
+                }
+              },
+              child: const Text('ログイン'),
+            ),
+          ],
         ),
       ),
     );
