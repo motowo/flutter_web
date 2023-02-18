@@ -62,12 +62,13 @@ class LoginPage extends HookConsumerWidget {
                         emailController.text,
                         passwordController.text,
                       );
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const ListPage()),
                     (_) => false,
                   );
                 } catch (e) {
-                  print('サインインでエラーだよ');
+                  rethrow;
                 }
               },
               child: const Text('ログイン'),

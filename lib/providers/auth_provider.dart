@@ -17,22 +17,12 @@ class AuthController extends StateNotifier<User?> {
   @override
   User? get state => _read(authRepositoryProvider).getCurrentUser();
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future<void> signIn(String email, String password) async {
     try {
       await _read(authRepositoryProvider).signInWithEmail(email, password);
     } catch (e) {
-      throw e.toString();
+      rethrow;
     }
-  }
-
-  Future<void> signUp(String email, String password) async {
-    await _read(authRepositoryProvider).signUp(email, password);
-    // Firestoreにユーザデータを追加したり
   }
 
   Future<void> signOut() async {

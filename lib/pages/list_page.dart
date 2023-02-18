@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../providers/auth_provider.dart';
 
@@ -16,15 +16,60 @@ class ListPage extends HookConsumerWidget {
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () async {
-                await FirebaseAuth.instance.signOut();
+                ref.read(authControllerProvider.notifier).signOut();
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pushReplacementNamed('/');
               },
             ),
           ],
         ),
-        body: Center(
-          child: Text('List ${user?.uid}'),
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Text('ログイン情報：${user?.email}'),
+            ),
+            Expanded(
+              // FutureBuilder
+              // 非同期処理の結果を元にWidgetを作れる
+              // child: FutureBuilder<QuerySnapshot>(
+              //   future: FirebaseFirestore.instance
+              //       .collection('cards')
+              //       .orderBy('updatedAt')
+              //       .get(),
+              child: StreamBuilder<QuerySnapshot>(
+                // 投稿メッセージ一覧を取得（非同期処理）
+                // 投稿日時でソート
+                stream: FirebaseFirestore.instance
+                    .collection('cards')
+                    .where('company', isEqualTo: 'a')
+                    .orderBy('updatedAt')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  // データが取得できた場合
+                  if (snapshot.hasData) {
+                    final List<DocumentSnapshot> documents =
+                        snapshot.data!.docs;
+                    // 取得した投稿メッセージ一覧を元にリスト表示
+                    return ListView(
+                      children: documents.map((document) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(document['id']),
+                            subtitle: Text(document['status']),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  }
+                  // データが読込中の場合
+                  return const Center(
+                    child: Text('読込中...'),
+                  );
+                },
+              ),
+            ),
+          ],
         ));
   }
 }
