@@ -134,3 +134,5 @@ app.*.symbols
 
 lib/firebase_options.dart
 
+docker/firebase/bin/
+.firebase
