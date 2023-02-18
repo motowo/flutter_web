@@ -52,11 +52,11 @@ class ListPage extends HookConsumerWidget {
                         snapshot.data!.docs;
                     // 取得した投稿メッセージ一覧を元にリスト表示
                     return ListView(
-                      children: documents.map((document) {
+                      children: documents.map((doc) {
                         return Card(
                           child: ListTile(
-                            title: Text(document['id']),
-                            subtitle: Text(document['status']),
+                            title: Text(doc.id),
+                            subtitle: Text(doc['status']),
                           ),
                         );
                       }).toList(),
