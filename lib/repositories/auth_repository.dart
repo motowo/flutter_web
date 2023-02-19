@@ -7,7 +7,6 @@ final firebaseAuthProvider =
 abstract class BaseAuthRepository {
   Stream<User?> get authStateChanges;
   Future<void> signInWithEmail(String email, String password);
-  Future<UserCredential> signUp(String email, String password);
   User? getCurrentUser();
   Future<void> signOut();
 }
@@ -29,20 +28,6 @@ class AuthRepository implements BaseAuthRepository {
     try {
       await _read(firebaseAuthProvider)
           .signInWithEmailAndPassword(email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      throw convertAuthError(e.code);
-    }
-  }
-
-  @override
-  Future<UserCredential> signUp(String email, String password) async {
-    try {
-      final result =
-          await _read(firebaseAuthProvider).createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return result;
     } on FirebaseAuthException catch (e) {
       throw convertAuthError(e.code);
     }

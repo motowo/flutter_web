@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'auth_verification.dart';
 
 class FirebaseConnect extends StatelessWidget {
-  FirebaseConnect({Key? key}) : super(key: key);
-
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
+  FirebaseConnect({super.key});
 
   @override
   Widget build(BuildContext context) {
