@@ -35,3 +35,11 @@ services:
     working_dir: /opt/firebase
     command: firebase emulators:start
     tty: true
+  admin_sdk:
+    build: 
+      context: .
+      dockerfile: ./docker/admin_sdk/Dockerfile
+    volumes:
+      - ./admin:/app
+    tty: true
+    stdin_open: true

@@ -136,3 +136,6 @@ lib/firebase_options.dart
 
 docker/firebase/bin/
 .firebase
+
+/admin/credentials/*
+node_modules
