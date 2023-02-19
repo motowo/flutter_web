@@ -30,13 +30,6 @@ class ListPage extends HookConsumerWidget {
               child: Text('ログイン情報：${user?.email}'),
             ),
             Expanded(
-              // FutureBuilder
-              // 非同期処理の結果を元にWidgetを作れる
-              // child: FutureBuilder<QuerySnapshot>(
-              //   future: FirebaseFirestore.instance
-              //       .collection('cards')
-              //       .orderBy('updatedAt')
-              //       .get(),
               child: StreamBuilder<QuerySnapshot>(
                 // 投稿メッセージ一覧を取得（非同期処理）
                 // 投稿日時でソート
