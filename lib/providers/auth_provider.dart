@@ -6,26 +6,26 @@ import '/repositories/auth_repository.dart';
 
 final authControllerProvider =
     StateNotifierProvider.autoDispose<AuthController, User?>(
-  (ref) => AuthController(ref.read),
+  (ref) => AuthController(ref),
 );
 
 class AuthController extends StateNotifier<User?> {
-  final Reader _read;
+  final Ref _ref;
 
-  AuthController(this._read) : super(null);
+  AuthController(this._ref) : super(null);
 
   @override
-  User? get state => _read(authRepositoryProvider).getCurrentUser();
+  User? get state => _ref.read(authRepositoryProvider).getCurrentUser();
 
   Future<void> signIn(String email, String password) async {
     try {
-      await _read(authRepositoryProvider).signInWithEmail(email, password);
+      await _ref.read(authRepositoryProvider).signInWithEmail(email, password);
     } catch (e) {
       rethrow;
     }
   }
 
   Future<void> signOut() async {
-    await _read(authRepositoryProvider).signOut();
+    await _ref.read(authRepositoryProvider).signOut();
   }
 }

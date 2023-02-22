@@ -12,21 +12,22 @@ abstract class BaseAuthRepository {
 }
 
 final authRepositoryProvider =
-    Provider<AuthRepository>((ref) => AuthRepository(ref.read));
+    Provider<AuthRepository>((ref) => AuthRepository(ref));
 
 class AuthRepository implements BaseAuthRepository {
-  final Reader _read;
+  final Ref _ref;
 
-  const AuthRepository(this._read);
+  const AuthRepository(this._ref);
 
   @override
   Stream<User?> get authStateChanges =>
-      _read(firebaseAuthProvider).authStateChanges();
+      _ref.read(firebaseAuthProvider).authStateChanges();
 
   @override
   Future<void> signInWithEmail(String email, String password) async {
     try {
-      await _read(firebaseAuthProvider)
+      await _ref
+          .read(firebaseAuthProvider)
           .signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       throw convertAuthError(e.code);
@@ -36,7 +37,7 @@ class AuthRepository implements BaseAuthRepository {
   @override
   User? getCurrentUser() {
     try {
-      return _read(firebaseAuthProvider).currentUser;
+      return _ref.read(firebaseAuthProvider).currentUser;
     } on FirebaseAuthException catch (e) {
       throw convertAuthError(e.code);
     }
@@ -45,7 +46,7 @@ class AuthRepository implements BaseAuthRepository {
   @override
   Future<void> signOut() async {
     try {
-      await _read(firebaseAuthProvider).signOut();
+      await _ref.read(firebaseAuthProvider).signOut();
     } on FirebaseAuthException catch (e) {
       throw convertAuthError(e.code);
     }
