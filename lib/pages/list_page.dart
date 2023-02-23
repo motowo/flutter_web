@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../main.dart';
 import '../providers/auth_provider.dart';
+import '../providers/login_user_provider.dart';
 
 class ListPage extends HookConsumerWidget {
   const ListPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authControllerProvider);
+    final loginUser = ref.watch(loginUserStateProvider);
+    logger.fine(loginUser);
     return Scaffold(
         appBar: AppBar(
-          title: Text('List ${user?.email}'),
+          title: Text(
+              'List ${loginUser?.user?.email}, ${loginUser?.userType}, ${loginUser?.organization}'),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.logout),
@@ -27,7 +31,8 @@ class ListPage extends HookConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              child: Text('ログイン情報：${user?.email}'),
+              child: Text(
+                  'ログイン情報：${loginUser?.user?.email}, ${loginUser?.userType}'),
             ),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
@@ -35,7 +40,7 @@ class ListPage extends HookConsumerWidget {
                 // 投稿日時でソート
                 stream: FirebaseFirestore.instance
                     .collection('cards')
-                    .where('company', isEqualTo: 'a')
+                    .where('company', isEqualTo: loginUser?.organization)
                     .orderBy('updatedAt')
                     .snapshots(),
                 builder: (context, snapshot) {

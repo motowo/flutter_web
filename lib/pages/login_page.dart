@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../providers/auth_provider.dart';
+import '../providers/login_user_provider.dart';
 import 'list_page.dart';
 
 class LoginPage extends HookConsumerWidget {
@@ -62,6 +63,9 @@ class LoginPage extends HookConsumerWidget {
                         emailController.text,
                         passwordController.text,
                       );
+                  ref
+                      .read(loginUserStateProvider.notifier)
+                      .loadLoginUser(ref.read(authControllerProvider));
                   // ignore: use_build_context_synchronously
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const ListPage()),
