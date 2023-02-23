@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class CardDetailPage extends HookConsumerWidget {
-  const CardDetailPage({super.key});
+class CardAddPage extends HookConsumerWidget {
+  const CardAddPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -11,7 +11,7 @@ class CardDetailPage extends HookConsumerWidget {
         child: Container(
           padding: EdgeInsets.all(32),
           child: Column(
-            children: <Widget>[Text('CardDetail')],
+            children: <Widget>[Text('CardAdd')],
           ),
         ),
       ),

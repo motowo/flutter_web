@@ -33,6 +33,24 @@ class ListPage extends HookConsumerWidget {
               child: Text(
                   'ログイン情報：${loginUser?.user?.email}, ${loginUser?.userType}, ${loginUser?.organization}'),
             ),
+            Container(
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue),
+                  minimumSize:
+                      MaterialStateProperty.all<Size>(const Size(128, 32)),
+                ),
+                onPressed: () async {
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const ListPage()),
+                    (_) => false,
+                  );
+                },
+                child: const Text('ログイン'),
+              ),
+            ),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
