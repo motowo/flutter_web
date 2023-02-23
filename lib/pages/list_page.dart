@@ -14,8 +14,7 @@ class ListPage extends HookConsumerWidget {
     logger.fine(loginUser);
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-              'List ${loginUser?.user?.email}, ${loginUser?.userType}, ${loginUser?.organization}'),
+          title: Text('List'),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.logout),
@@ -30,41 +29,93 @@ class ListPage extends HookConsumerWidget {
         body: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(16),
               child: Text(
-                  'ログイン情報：${loginUser?.user?.email}, ${loginUser?.userType}'),
+                  'ログイン情報：${loginUser?.user?.email}, ${loginUser?.userType}, ${loginUser?.organization}'),
             ),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                // 投稿メッセージ一覧を取得（非同期処理）
-                // 投稿日時でソート
-                stream: FirebaseFirestore.instance
-                    .collection('cards')
-                    .where('company', isEqualTo: loginUser?.organization)
-                    .orderBy('updatedAt')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  // データが取得できた場合
-                  if (snapshot.hasData) {
-                    final List<DocumentSnapshot> documents =
-                        snapshot.data!.docs;
-                    // 取得した投稿メッセージ一覧を元にリスト表示
-                    return ListView(
-                      children: documents.map((doc) {
-                        return Card(
-                          child: ListTile(
-                            title: Text(doc.id),
-                            subtitle: Text(doc['status']),
-                          ),
-                        );
-                      }).toList(),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('cards')
+                      .where('company', isEqualTo: loginUser?.organization)
+                      .orderBy('updatedAt')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    // データが取得できた場合
+                    if (snapshot.hasData) {
+                      final List<DocumentSnapshot> documents =
+                          snapshot.data!.docs;
+                      // 取得した投稿メッセージ一覧を元にリスト表示
+                      return ListView(
+                        children: documents.map((doc) {
+                          return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6.0),
+                              child: InkWell(
+                                // onTap: doc['status'] == 'close'
+                                //     ? null
+                                //     : () {
+                                //         logger.info('${doc.id}');
+                                //       },
+                                onTap: () => logger.info('${doc.id}'),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        height: 64.0,
+                                        width: 100.0,
+                                        decoration:
+                                            BoxDecoration(color: Colors.red),
+                                        // type
+                                        child: Text(doc['type'],
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              // id
+                                              child: Text(doc.id),
+                                            ),
+                                            Container(
+                                              // updatedAt
+                                              child: Text(doc['updatedAt']
+                                                  .toDate()
+                                                  .toString()),
+                                              // child: Text("aaa"),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        height: 64.0,
+                                        width: 100.0,
+                                        decoration:
+                                            BoxDecoration(color: Colors.blue),
+                                        // type
+                                        child: Text(
+                                          doc['status'],
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ));
+                        }).toList(),
+                      );
+                    }
+                    // データが読込中の場合
+                    return const Center(
+                      child: Text('読込中...'),
                     );
-                  }
-                  // データが読込中の場合
-                  return const Center(
-                    child: Text('読込中...'),
-                  );
-                },
+                  },
+                ),
               ),
             ),
           ],
