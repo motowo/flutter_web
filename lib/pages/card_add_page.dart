@@ -22,30 +22,26 @@ class CardAddPage extends HookConsumerWidget {
           padding: EdgeInsets.all(32),
           child: Column(
             children: <Widget>[
-              Container(
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.blue),
-                    minimumSize:
-                        MaterialStateProperty.all<Size>(const Size(128, 32)),
-                  ),
-                  onPressed: () async {
-                    String uid = await ref
-                        .watch(cardsRepositoryProvider)
-                        .addCard(CardModel(
-                            type: "new",
-                            status: "draft",
-                            company: loginUser!.organization));
-                    RouteSettings settings = RouteSettings(arguments: uid);
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          settings: settings,
-                          builder: (context) => const CardDetailPage()),
-                    );
-                  },
-                  child: const Text('追加する'),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue),
+                  minimumSize:
+                      MaterialStateProperty.all<Size>(const Size(128, 32)),
                 ),
+                onPressed: () async {
+                  String uid = await ref.watch(cardsRepositoryProvider).addCard(
+                      CardModel(
+                          type: "new",
+                          status: "draft",
+                          company: loginUser!.organization));
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        settings: RouteSettings(arguments: uid),
+                        builder: (context) => const CardDetailPage()),
+                  );
+                },
+                child: const Text('追加する'),
               ),
             ],
           ),

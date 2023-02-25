@@ -3,11 +3,13 @@ import 'package:flutter_web/main.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../models/card_model.dart';
+import '../models/comment_model.dart';
 import '../providers/firebase_provider.dart';
 
 abstract class BaseCardsRepository {
   Future<String> addCard(CardModel card);
   Future<CardModel> getCard(String uid);
+  Future<String> addComment(String uid, CommentModel comment);
 }
 
 final cardsRepositoryProvider =
@@ -16,6 +18,8 @@ final cardsRepositoryProvider =
 class CardsRepository implements BaseCardsRepository {
   final Ref _ref;
   final String _collectionName = 'cards';
+  final String _commentsCollectionName = 'comments';
+  final String _imagesCollectionName = 'images';
 
   const CardsRepository(this._ref);
 
@@ -27,8 +31,6 @@ class CardsRepository implements BaseCardsRepository {
         .read(firebaseFirestoreProvider)
         .collection(_collectionName)
         .add(toJson);
-    logger.fine(doc);
-    logger.fine(doc.id);
     return doc.id;
   }
 
@@ -40,5 +42,18 @@ class CardsRepository implements BaseCardsRepository {
         .doc(uid)
         .get();
     return CardModel.fromJson(doc as Map<String, dynamic>);
+  }
+
+  @override
+  Future<String> addComment(String uid, CommentModel comment) async {
+    var toJson = comment.toJson();
+    toJson.addAll({'createdAt': DateTime.now()});
+    var doc = await _ref
+        .read(firebaseFirestoreProvider)
+        .collection(_collectionName)
+        .doc(uid)
+        .collection(_commentsCollectionName)
+        .add(toJson);
+    return doc.id;
   }
 }

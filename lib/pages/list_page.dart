@@ -38,23 +38,19 @@ class ListPage extends HookConsumerWidget {
               child: Text(
                   'ログイン情報：${loginUser?.user?.email}, ${loginUser?.userType}, ${loginUser?.organization}'),
             ),
-            Container(
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.blue),
-                  minimumSize:
-                      MaterialStateProperty.all<Size>(const Size(128, 32)),
-                ),
-                onPressed: () async {
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const CardAddPage()),
-                  );
-                },
-                child: const Text('カード追加'),
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                minimumSize:
+                    MaterialStateProperty.all<Size>(const Size(128, 32)),
               ),
+              onPressed: () async {
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const CardAddPage()),
+                );
+              },
+              child: const Text('カード追加'),
             ),
             Expanded(
               child: Container(
@@ -77,12 +73,10 @@ class ListPage extends HookConsumerWidget {
                               margin: const EdgeInsets.symmetric(vertical: 6.0),
                               child: InkWell(
                                 onTap: () {
-                                  logger.info('${doc.id}');
-                                  RouteSettings settings =
-                                      RouteSettings(arguments: doc.id);
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        settings: settings,
+                                        settings:
+                                            RouteSettings(arguments: doc.id),
                                         builder: (context) =>
                                             const CardDetailPage()),
                                   );
