@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web/main.dart';
 import 'package:flutter_web/models/card_model.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 import '../models/comment_model.dart';
 import '../providers/login_user_provider.dart';
 import '../repositories/cards_repository.dart';
@@ -51,7 +55,47 @@ class CardDetailPage extends HookConsumerWidget {
               ),
             ),
             Container(
-              decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+              padding: EdgeInsets.symmetric(vertical: 2.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  logger.info("redy upload");
+                  Uint8List? uint8list = await ImagePickerWeb.getImageAsBytes();
+                  if (uint8list != null) {
+                    var metadata = SettableMetadata(
+                      contentType: "image/jpeg",
+                    );
+                    logger.info("start upload");
+                    UploadTask task = FirebaseStorage.instance
+                        .ref("test")
+                        .putData(uint8list, metadata);
+                    task.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+                      switch (taskSnapshot.state) {
+                        case TaskState.running:
+                          final progress = 100.0 *
+                              (taskSnapshot.bytesTransferred /
+                                  taskSnapshot.totalBytes);
+                          logger.info("Upload is $progress% complete.");
+                          break;
+                        case TaskState.paused:
+                          logger.info("Upload is paused.");
+                          break;
+                        case TaskState.canceled:
+                          logger.info("Upload was canceled");
+                          break;
+                        case TaskState.error:
+                          logger.info("Upload was error");
+                          break;
+                        case TaskState.success:
+                          logger.info("Upload was completed");
+                          break;
+                      }
+                    });
+                  }
+                },
+                child: Icon(Icons.upload),
+              ),
+            ),
+            Container(
               padding: EdgeInsets.symmetric(vertical: 2.0),
               child: TextFormField(
                 decoration: InputDecoration(
