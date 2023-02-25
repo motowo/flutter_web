@@ -28,6 +28,7 @@ class CardsRepository implements BaseCardsRepository {
         .collection(_collectionName)
         .add(toJson);
     logger.fine(doc);
+    logger.fine(doc.id);
     return doc.id;
   }
 

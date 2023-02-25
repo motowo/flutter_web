@@ -37,8 +37,10 @@ class CardAddPage extends HookConsumerWidget {
                             type: "new",
                             status: "draft",
                             company: loginUser!.organization));
+                    RouteSettings settings = RouteSettings(arguments: uid);
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
+                          settings: settings,
                           builder: (context) => const CardDetailPage()),
                     );
                   },
