@@ -27,6 +27,8 @@ f_get:
 f_analyze:
 # $(dc) exec -it flutter flutter analyze
 	flutter analyze
+f_build_runner:
+	flutter pub run build_runner build
 # Firebase
 fb_deploy_pub:
 	firebase deploy
