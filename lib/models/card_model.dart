@@ -16,19 +16,21 @@
 import 'dart:convert';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'card.freezed.dart';
-part 'card.g.dart';
+part 'card_model.freezed.dart';
+part 'card_model.g.dart';
 
 @freezed
-class Card with _$Card {
-  const factory Card(
+class CardModel with _$CardModel {
+  const CardModel._();
+  const factory CardModel(
       {required String type,
       required String status,
-      required String company}) = _Card;
+      required String company}) = _CardModel;
 
-  factory Card.fromJson(Map<String, dynamic> json) => _$CardFromJson(json);
-  factory Card.fromJsonStr(String jsonStr) =>
-      _$CardFromJson(json.decode(jsonStr));
+  factory CardModel.fromJson(Map<String, dynamic> json) =>
+      _$CardModelFromJson(json);
+  factory CardModel.fromJsonStr(String jsonStr) =>
+      _$CardModelFromJson(json.decode(jsonStr));
 
   String toJsonStr() {
     return json.encode(toJson());

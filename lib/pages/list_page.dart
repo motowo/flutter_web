@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_web/pages/card_detail_page.dart';
 import 'package:flutter_web/pages/login_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../main.dart';
@@ -75,12 +76,17 @@ class ListPage extends HookConsumerWidget {
                           return Container(
                               margin: const EdgeInsets.symmetric(vertical: 6.0),
                               child: InkWell(
-                                // onTap: doc['status'] == 'close'
-                                //     ? null
-                                //     : () {
-                                //         logger.info('${doc.id}');
-                                //       },
-                                onTap: () => logger.info('${doc.id}'),
+                                onTap: () {
+                                  logger.info('${doc.id}');
+                                  RouteSettings settings =
+                                      RouteSettings(arguments: doc.id);
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        settings: settings,
+                                        builder: (context) =>
+                                            const CardDetailPage()),
+                                  );
+                                },
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10.0),
                                   child: Row(

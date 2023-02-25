@@ -6,6 +6,7 @@ class CardDetailPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Object? args = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: Text('detail'),
@@ -14,7 +15,7 @@ class CardDetailPage extends HookConsumerWidget {
         child: Container(
           padding: EdgeInsets.all(32),
           child: Column(
-            children: <Widget>[Text('CardDetail')],
+            children: <Widget>[Text('CardDetail ${args as String}')],
           ),
         ),
       ),

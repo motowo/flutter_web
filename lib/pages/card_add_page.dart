@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../providers/login_user_provider.dart';
 import '../repositories/cards_repository.dart';
 
-import '../models/card.dart' as CardModel;
+import '../models/card_model.dart';
 
 class CardAddPage extends HookConsumerWidget {
   const CardAddPage({super.key});
@@ -31,10 +31,12 @@ class CardAddPage extends HookConsumerWidget {
                         MaterialStateProperty.all<Size>(const Size(128, 32)),
                   ),
                   onPressed: () async {
-                    ref.watch(cardsRepositoryProvider).addCard(CardModel.Card(
-                        type: "new",
-                        status: "draft",
-                        company: loginUser!.organization));
+                    String uid = await ref
+                        .watch(cardsRepositoryProvider)
+                        .addCard(CardModel(
+                            type: "new",
+                            status: "draft",
+                            company: loginUser!.organization));
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                           builder: (context) => const CardDetailPage()),
