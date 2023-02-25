@@ -63,7 +63,7 @@ class ListPage extends HookConsumerWidget {
                   stream: FirebaseFirestore.instance
                       .collection('cards')
                       .where('company', isEqualTo: loginUser?.organization)
-                      .orderBy('updatedAt')
+                      .orderBy('updatedAt', descending: true)
                       .snapshots(),
                   builder: (context, snapshot) {
                     // データが取得できた場合
