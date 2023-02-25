@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_web/main.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -54,6 +55,12 @@ class CardsRepository implements BaseCardsRepository {
         .doc(uid)
         .collection(_commentsCollectionName)
         .add(toJson);
+    await _ref
+        .read(firebaseFirestoreProvider)
+        .collection(_collectionName)
+        .doc(uid)
+        .set({"latestComment": comment.comment, "updatedAt": DateTime.now()},
+            SetOptions(merge: true));
     return doc.id;
   }
 }
