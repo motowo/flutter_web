@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_web/pages/login_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../main.dart';
 import '../providers/auth_provider.dart';
 import '../providers/login_user_provider.dart';
+import 'card_add_page.dart';
 
 class ListPage extends HookConsumerWidget {
   const ListPage({super.key});
@@ -20,8 +22,10 @@ class ListPage extends HookConsumerWidget {
               icon: const Icon(Icons.logout),
               onPressed: () async {
                 ref.read(authControllerProvider.notifier).signOut();
-                // ignore: use_build_context_synchronously
-                Navigator.of(context).pushReplacementNamed('/');
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  (_) => false,
+                );
               },
             ),
           ],
@@ -43,12 +47,12 @@ class ListPage extends HookConsumerWidget {
                 ),
                 onPressed: () async {
                   // ignore: use_build_context_synchronously
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const ListPage()),
-                    (_) => false,
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const CardAddPage()),
                   );
                 },
-                child: const Text('ログイン'),
+                child: const Text('カード追加'),
               ),
             ),
             Expanded(

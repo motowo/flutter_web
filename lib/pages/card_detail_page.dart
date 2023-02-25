@@ -7,6 +7,9 @@ class CardDetailPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('detail'),
+      ),
       body: Center(
         child: Container(
           padding: EdgeInsets.all(32),
