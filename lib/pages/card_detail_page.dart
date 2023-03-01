@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web/main.dart';
 import 'package:flutter_web/models/card_model.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:image_picker_web/image_picker_web.dart';
@@ -13,13 +14,16 @@ import '../providers/login_user_provider.dart';
 import '../repositories/cards_repository.dart';
 
 class CardDetailPage extends HookConsumerWidget {
-  const CardDetailPage({super.key});
+  CardDetailPage({super.key});
+  final formKeyProvider = Provider((ref) => GlobalKey<FormState>());
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String? uid = ModalRoute.of(context)!.settings.arguments as String;
     final loginUser = ref.watch(loginUserStateProvider);
-    final commentController = useTextEditingController(text: '');
+    final globalKey = ref.watch(formKeyProvider);
+    TextEditingController commentController =
+        useTextEditingController(text: '');
     return Scaffold(
       appBar: AppBar(
         title: const Text('detail'),
@@ -95,30 +99,6 @@ class CardDetailPage extends HookConsumerWidget {
                 child: Icon(Icons.upload),
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 2.0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.add_comment),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () {
-                      ref.watch(cardsRepositoryProvider).addComment(
-                          uid,
-                          CommentModel(
-                              comment: commentController.text,
-                              postedUid: loginUser!.user!.uid,
-                              postedUserType: loginUser.userType));
-                      commentController.clear();
-                    },
-                  ),
-                  label: Text('コメント'),
-                  hintText: 'よろしくおねがいします',
-                ),
-                controller: commentController,
-                keyboardType: TextInputType.text,
-              ),
-            ),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -144,7 +124,38 @@ class CardDetailPage extends HookConsumerWidget {
                   }
                 },
               ),
-            )
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 2.0),
+              child: Form(
+                key: globalKey,
+                child: TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: RequiredValidator(errorText: "コメントを入力してください"),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: () {
+                        if (globalKey.currentState!.validate()) {
+                          ref.watch(cardsRepositoryProvider).addComment(
+                              uid,
+                              CommentModel(
+                                  comment: commentController.text,
+                                  postedUid: loginUser!.user!.uid,
+                                  postedUserType: loginUser.userType));
+                          commentController.clear();
+                        }
+                      },
+                    ),
+                    label: Text('コメント'),
+                    hintText: 'よろしくおねがいします',
+                  ),
+                  controller: commentController,
+                  keyboardType: TextInputType.text,
+                ),
+              ),
+            ),
           ],
         ),
       ),

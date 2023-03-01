@@ -38,7 +38,7 @@ class CardAddPage extends HookConsumerWidget {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                         settings: RouteSettings(arguments: uid),
-                        builder: (context) => const CardDetailPage()),
+                        builder: (context) => CardDetailPage()),
                   );
                 },
                 child: const Text('追加する'),
