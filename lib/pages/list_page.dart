@@ -77,7 +77,8 @@ class ListPage extends HookConsumerWidget {
                                     MaterialPageRoute(
                                         settings:
                                             RouteSettings(arguments: doc.id),
-                                        builder: (context) => CardDetailPage()),
+                                        builder: (context) =>
+                                            const CardDetailPage()),
                                   );
                                 },
                                 child: ClipRRect(
