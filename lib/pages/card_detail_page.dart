@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import '../models/comment_model.dart';
+import '../models/login_user.dart';
 import '../providers/login_user_provider.dart';
 import '../repositories/cards_repository.dart';
 
@@ -19,7 +20,6 @@ class CardDetailPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     String? uid = ModalRoute.of(context)!.settings.arguments as String;
     final loginUser = ref.watch(loginUserStateProvider);
-    final commentController = useTextEditingController(text: '');
     return Scaffold(
       appBar: AppBar(
         title: const Text('detail'),
@@ -65,10 +65,12 @@ class CardDetailPage extends HookConsumerWidget {
                       contentType: "image/jpeg",
                     );
                     logger.info("start upload");
+                    int unixtime = DateTime.now().microsecondsSinceEpoch;
                     UploadTask task = FirebaseStorage.instance
-                        .ref("test")
+                        .ref("${uid}/${unixtime}")
                         .putData(uint8list, metadata);
-                    task.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+                    task.snapshotEvents
+                        .listen((TaskSnapshot taskSnapshot) async {
                       switch (taskSnapshot.state) {
                         case TaskState.running:
                           final progress = 100.0 *
@@ -86,7 +88,14 @@ class CardDetailPage extends HookConsumerWidget {
                           logger.info("Upload was error");
                           break;
                         case TaskState.success:
-                          logger.info("Upload was completed");
+                          String url = await taskSnapshot.ref.getDownloadURL();
+                          ref.watch(cardsRepositoryProvider).addImage(
+                              uid,
+                              CommentModel(
+                                  imageUrl: url,
+                                  postedUid: loginUser!.user!.uid,
+                                  postedUserType: loginUser.userType));
+                          logger.info("Upload was completed: $url");
                           break;
                       }
                     });
@@ -95,30 +104,7 @@ class CardDetailPage extends HookConsumerWidget {
                 child: Icon(Icons.upload),
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 2.0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.add_comment),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () {
-                      ref.watch(cardsRepositoryProvider).addComment(
-                          uid,
-                          CommentModel(
-                              comment: commentController.text,
-                              postedUid: loginUser!.user!.uid,
-                              postedUserType: loginUser.userType));
-                      commentController.clear();
-                    },
-                  ),
-                  label: Text('コメント'),
-                  hintText: 'よろしくおねがいします',
-                ),
-                controller: commentController,
-                keyboardType: TextInputType.text,
-              ),
-            ),
+            _commentInput(ref, uid, loginUser!),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -136,7 +122,15 @@ class CardDetailPage extends HookConsumerWidget {
                         logger.info("comment id = ${doc.id}");
                         return Container(
                             padding: EdgeInsets.symmetric(vertical: 2.0),
-                            child: Text("${doc.id}, ${doc['comment']}"));
+                            child: Column(
+                              children: [
+                                Text("${doc.id}, ${doc.get('comment')}"),
+                                doc.data().toString().contains('imageUrl') &&
+                                        doc.get('imageUrl') != ""
+                                    ? Image.network(doc.get('imageUrl'))
+                                    : Container()
+                              ],
+                            ));
                       }).toList(),
                     );
                   } else {
@@ -147,6 +141,34 @@ class CardDetailPage extends HookConsumerWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _commentInput(WidgetRef ref, String uid, LoginUser loginUser) {
+    final commentController = useTextEditingController(text: '');
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.add_comment),
+          suffixIcon: IconButton(
+            icon: Icon(Icons.send),
+            onPressed: () {
+              ref.watch(cardsRepositoryProvider).addComment(
+                  uid,
+                  CommentModel(
+                      comment: commentController.text,
+                      postedUid: loginUser.user!.uid,
+                      postedUserType: loginUser.userType));
+              commentController.clear();
+            },
+          ),
+          label: Text('コメント'),
+          hintText: 'よろしくおねがいします',
+        ),
+        controller: commentController,
+        keyboardType: TextInputType.text,
       ),
     );
   }

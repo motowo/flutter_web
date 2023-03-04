@@ -21,6 +21,7 @@ CommentModel _$CommentModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$CommentModel {
   String get comment => throw _privateConstructorUsedError;
+  String get imageUrl => throw _privateConstructorUsedError;
   String get postedUid => throw _privateConstructorUsedError;
   String get postedUserType => throw _privateConstructorUsedError;
 
@@ -36,7 +37,11 @@ abstract class $CommentModelCopyWith<$Res> {
           CommentModel value, $Res Function(CommentModel) then) =
       _$CommentModelCopyWithImpl<$Res, CommentModel>;
   @useResult
-  $Res call({String comment, String postedUid, String postedUserType});
+  $Res call(
+      {String comment,
+      String imageUrl,
+      String postedUid,
+      String postedUserType});
 }
 
 /// @nodoc
@@ -53,6 +58,7 @@ class _$CommentModelCopyWithImpl<$Res, $Val extends CommentModel>
   @override
   $Res call({
     Object? comment = null,
+    Object? imageUrl = null,
     Object? postedUid = null,
     Object? postedUserType = null,
   }) {
@@ -60,6 +66,10 @@ class _$CommentModelCopyWithImpl<$Res, $Val extends CommentModel>
       comment: null == comment
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       postedUid: null == postedUid
           ? _value.postedUid
@@ -81,7 +91,11 @@ abstract class _$$_CommentModelCopyWith<$Res>
       __$$_CommentModelCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String comment, String postedUid, String postedUserType});
+  $Res call(
+      {String comment,
+      String imageUrl,
+      String postedUid,
+      String postedUserType});
 }
 
 /// @nodoc
@@ -96,6 +110,7 @@ class __$$_CommentModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? comment = null,
+    Object? imageUrl = null,
     Object? postedUid = null,
     Object? postedUserType = null,
   }) {
@@ -103,6 +118,10 @@ class __$$_CommentModelCopyWithImpl<$Res>
       comment: null == comment
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       postedUid: null == postedUid
           ? _value.postedUid
@@ -120,7 +139,8 @@ class __$$_CommentModelCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_CommentModel extends _CommentModel {
   const _$_CommentModel(
-      {required this.comment,
+      {this.comment = "",
+      this.imageUrl = "",
       required this.postedUid,
       required this.postedUserType})
       : super._();
@@ -129,7 +149,11 @@ class _$_CommentModel extends _CommentModel {
       _$$_CommentModelFromJson(json);
 
   @override
+  @JsonKey()
   final String comment;
+  @override
+  @JsonKey()
+  final String imageUrl;
   @override
   final String postedUid;
   @override
@@ -137,7 +161,7 @@ class _$_CommentModel extends _CommentModel {
 
   @override
   String toString() {
-    return 'CommentModel(comment: $comment, postedUid: $postedUid, postedUserType: $postedUserType)';
+    return 'CommentModel(comment: $comment, imageUrl: $imageUrl, postedUid: $postedUid, postedUserType: $postedUserType)';
   }
 
   @override
@@ -146,6 +170,8 @@ class _$_CommentModel extends _CommentModel {
         (other.runtimeType == runtimeType &&
             other is _$_CommentModel &&
             (identical(other.comment, comment) || other.comment == comment) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.postedUid, postedUid) ||
                 other.postedUid == postedUid) &&
             (identical(other.postedUserType, postedUserType) ||
@@ -155,7 +181,7 @@ class _$_CommentModel extends _CommentModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, comment, postedUid, postedUserType);
+      Object.hash(runtimeType, comment, imageUrl, postedUid, postedUserType);
 
   @JsonKey(ignore: true)
   @override
@@ -173,7 +199,8 @@ class _$_CommentModel extends _CommentModel {
 
 abstract class _CommentModel extends CommentModel {
   const factory _CommentModel(
-      {required final String comment,
+      {final String comment,
+      final String imageUrl,
       required final String postedUid,
       required final String postedUserType}) = _$_CommentModel;
   const _CommentModel._() : super._();
@@ -183,6 +210,8 @@ abstract class _CommentModel extends CommentModel {
 
   @override
   String get comment;
+  @override
+  String get imageUrl;
   @override
   String get postedUid;
   @override

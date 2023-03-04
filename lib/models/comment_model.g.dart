@@ -8,7 +8,8 @@ part of 'comment_model.dart';
 
 _$_CommentModel _$$_CommentModelFromJson(Map<String, dynamic> json) =>
     _$_CommentModel(
-      comment: json['comment'] as String,
+      comment: json['comment'] as String? ?? "",
+      imageUrl: json['imageUrl'] as String? ?? "",
       postedUid: json['postedUid'] as String,
       postedUserType: json['postedUserType'] as String,
     );
@@ -16,6 +17,7 @@ _$_CommentModel _$$_CommentModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$_CommentModelToJson(_$_CommentModel instance) =>
     <String, dynamic>{
       'comment': instance.comment,
+      'imageUrl': instance.imageUrl,
       'postedUid': instance.postedUid,
       'postedUserType': instance.postedUserType,
     };

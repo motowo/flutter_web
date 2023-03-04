@@ -41,6 +41,7 @@ class CardsRepository implements BaseCardsRepository {
         .read(firebaseFirestoreProvider)
         .collection(_collectionName)
         .doc(uid)
+        // .get(const GetOptions(source: Source.serverAndCache));
         .get();
     return CardModel.fromJson(doc as Map<String, dynamic>);
   }
@@ -48,7 +49,8 @@ class CardsRepository implements BaseCardsRepository {
   @override
   Future<String> addComment(String uid, CommentModel comment) async {
     var toJson = comment.toJson();
-    toJson.addAll({'createdAt': DateTime.now()});
+    var now = DateTime.now();
+    toJson.addAll({'createdAt': now});
     var doc = await _ref
         .read(firebaseFirestoreProvider)
         .collection(_collectionName)
@@ -59,7 +61,26 @@ class CardsRepository implements BaseCardsRepository {
         .read(firebaseFirestoreProvider)
         .collection(_collectionName)
         .doc(uid)
-        .set({"latestComment": comment.comment, "updatedAt": DateTime.now()},
+        .set({"latestComment": comment.comment, "updatedAt": now},
+            SetOptions(merge: true));
+    return doc.id;
+  }
+
+  Future<String> addImage(String uid, CommentModel comment) async {
+    var toJson = comment.toJson();
+    var now = DateTime.now();
+    toJson.addAll({'createdAt': now});
+    var doc = await _ref
+        .read(firebaseFirestoreProvider)
+        .collection(_collectionName)
+        .doc(uid)
+        .collection(_commentsCollectionName)
+        .add(toJson);
+    await _ref
+        .read(firebaseFirestoreProvider)
+        .collection(_collectionName)
+        .doc(uid)
+        .set({"latestComment": "画像がアップロードされました", "updatedAt": now},
             SetOptions(merge: true));
     return doc.id;
   }

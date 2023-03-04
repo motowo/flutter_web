@@ -99,17 +99,10 @@ class ListPage extends HookConsumerWidget {
                                       Expanded(
                                         child: Column(
                                           children: [
-                                            Container(
-                                              // id
-                                              child: Text(doc.id),
-                                            ),
-                                            Container(
-                                              // updatedAt
-                                              child: Text(doc['updatedAt']
-                                                  .toDate()
-                                                  .toString()),
-                                              // child: Text("aaa"),
-                                            )
+                                            Text(doc.id),
+                                            Text(doc['updatedAt']
+                                                .toDate()
+                                                .toString())
                                           ],
                                         ),
                                       ),

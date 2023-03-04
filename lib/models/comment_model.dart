@@ -8,7 +8,8 @@ part 'comment_model.g.dart';
 class CommentModel with _$CommentModel {
   const CommentModel._();
   const factory CommentModel({
-    required String comment,
+    @Default("") String comment,
+    @Default("") String imageUrl,
     required String postedUid,
     required String postedUserType,
   }) = _CommentModel;
