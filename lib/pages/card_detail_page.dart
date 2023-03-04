@@ -106,7 +106,7 @@ class CardDetailPage extends HookConsumerWidget {
             ),
             _commentInput(ref, uid, loginUser!),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('cards')
                     .doc(uid)
@@ -115,19 +115,19 @@ class CardDetailPage extends HookConsumerWidget {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final List<DocumentSnapshot> documents =
-                        snapshot.data!.docs;
+                    final List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                        documents = snapshot.data!.docs.cast<
+                            QueryDocumentSnapshot<Map<String, dynamic>>>();
                     return ListView(
                       children: documents.map((doc) {
-                        logger.info("comment id = ${doc.id}");
                         return Container(
                             padding: EdgeInsets.symmetric(vertical: 2.0),
                             child: Column(
                               children: [
-                                Text("${doc.id}, ${doc.get('comment')}"),
-                                doc.data().toString().contains('imageUrl') &&
-                                        doc.get('imageUrl') != ""
-                                    ? Image.network(doc.get('imageUrl'))
+                                Text("${doc['comment']}"),
+                                doc.data().containsKey('imageUrl') &&
+                                        doc['imageUrl'] != ""
+                                    ? Image.network(doc['imageUrl'])
                                     : Container()
                               ],
                             ));

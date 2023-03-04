@@ -27,7 +27,8 @@ class CardsRepository implements BaseCardsRepository {
   @override
   Future<String> addCard(CardModel card) async {
     var toJson = card.toJson();
-    toJson.addAll({'createdAt': DateTime.now(), 'updatedAt': DateTime.now()});
+    DateTime now = DateTime.now();
+    toJson.addAll({'createdAt': now, 'updatedAt': now});
     var doc = await _ref
         .read(firebaseFirestoreProvider)
         .collection(_collectionName)
@@ -41,7 +42,6 @@ class CardsRepository implements BaseCardsRepository {
         .read(firebaseFirestoreProvider)
         .collection(_collectionName)
         .doc(uid)
-        // .get(const GetOptions(source: Source.serverAndCache));
         .get();
     return CardModel.fromJson(doc as Map<String, dynamic>);
   }
