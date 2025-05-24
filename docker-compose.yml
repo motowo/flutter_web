@@ -1,45 +1,52 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  # flutter:
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/flutter/Dockerfile
-  #   ports:
-  #     - "8888:8888"
-  #   volumes:
-  #     - .:/build
-  #   # command: flutter run -d web-server --web-port=8888 --web-hostname 0.0.0.0
-  #   tty: true
-  #   stdin_open: true
-  firebase:
-    build:
-      context: .
-      dockerfile: ./docker/firebase/Dockerfile
+  db:
+    image: postgres:13-alpine
+    container_name: card_postgres_db
     volumes:
-      - ./.firebaserc:/opt/firebase/.firebaserc
-      - ./firebase.json:/opt/firebase/firebase.json
-      - ./firestore.indexes.json:/opt/firebase/firestore.indexes.json
-      - ./firestore.rules:/opt/firebase/firestore.rules
-      - ./docker/firebase/bin/:/root/.cache:cached
-      - ./docker/firebase/config/:/root/.config:cached
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     ports:
-      - 9099:9099 # Firebase Authentication
-      # - 5001:5001 # Clound Functions
-      # - 8080:8080 # Cloud Firestore
-      # - 9000:9000 # Realtime Database
-      # - 5050:5050 # Firebase Hosting
-      # - 8085:8085 # Cloud Pub/Sub
-      # - 9199:9199 # Cloud Storage
-      - 4000:4000 # Emulator Suite UI
-    working_dir: /opt/firebase
-    command: firebase emulators:start
-    tty: true
-  admin_sdk:
-    build: 
-      context: .
-      dockerfile: ./docker/admin_sdk/Dockerfile
+      - "5432:5432" 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./card_project_backend
+    container_name: card_django_backend
     volumes:
-      - ./admin:/app
-    tty: true
-    stdin_open: true
+      - media_files:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-your_default_secret_key_here_change_me}
+      - DEBUG=${DEBUG:-1}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3001,http://127.0.0.1:3001} # Assuming frontend runs on port 3001
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./card_project_frontend
+    container_name: card_react_frontend
+    ports:
+      - "3001:80" 
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  media_files:
