@@ -34,3 +34,29 @@ samples, guidance on mobile development, and a full API reference.
 |                      | **バックエンド**                                                                                                                   | Firebase（データベースとしてFirestore、画像ファイル用にFirebase Storage、ユーザー管理用にFirebase Authentication）を利用しています。                                                                                                                                                                                                         |
 |                      | **エラーハンドリング**                                                                                                               | ログイン失敗時の基本的なエラーメッセージ（日本語）が含まれています。                                                                                                                                                                                                                                                                           |
 |                      | **ロギング**                                                                                                                     | デバッグロギングのために `simple_logger` を使用しています。                                                                                                                                                                                                                                                                                  |
+
+## ER図
+
+```mermaid
+erDiagram
+    cards {
+        string cardId PK "Document ID"
+        string type
+        string status
+        string company
+        timestamp createdAt
+        timestamp updatedAt
+        string latestComment "Optional"
+    }
+
+    comments {
+        string commentId PK "Document ID"
+        string comment "Optional"
+        string imageUrl "Optional"
+        string postedUid
+        string postedUserType
+        timestamp createdAt
+    }
+
+    cards ||--o{ comments : "has"
+```
